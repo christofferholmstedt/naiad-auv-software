@@ -6,8 +6,10 @@ echo "####################################"
 echo "# Install required packages first"
 echo "# gnat-4.6 and its requirements"
 echo "####################################"
+# FIX: Install gprbuild as well for gprconfig otherwise this will break when
+# installing avr-ada
 echo sudo apt-get install build-essential libc6-dev gnat-4.6  libgmp-dev bison \
-    flex libmpfr-dev libmpc-dev git texinfo zlib1g-dev
+    flex libmpfr-dev libmpc-dev git texinfo zlib1g-dev gprbuild
 echo mkdir -pv $HOME/avrada-build
 echo cd $HOME/avrada-build
 
@@ -67,6 +69,7 @@ echo ""
 
 # TODO: Remove the comments for this section when trying it out on a new
 # computer.
+# TODO: Remember to escape the $@-signs.
 # cat > /opt/gnat-4.7/bin/gcc-4.7 <<EOL
 # #!/bin/sh
 # exec /opt/gnat-4.7/bin/gcc -B/usr/lib/i386-linux-gnu -I/usr/include/i386-linux-gnu "$@"
@@ -147,7 +150,8 @@ echo tar jvxf avr-libc-1.8.0.tar.bz2
 echo cd avr-libc-1.8.0
 echo ./configure --host=avr --prefix=$DEST_GNAT_CROSS
 echo make
-echo sudo su -c ". ./cross_build_env.sh; make install"
+# FIX: Added extra dot to the path because the shell script is one directory up
+echo sudo su -c ". ../cross_build_env.sh; make install"
 echo cd ..
 
 echo ""
@@ -157,11 +161,18 @@ echo "#####################################################"
 echo ""
 echo cd avr-ada-code
 echo ./configure
+
+# FIX: Install gprbuild as well for gprconfig otherwise this will break
+# FIX2: run make three times...first two times will error out.
 echo make
+
+# This fails as well with gprconfig, try some more times and it "works".
 echo sudo su -c ". ../native_build_env.sh ; . ../cross_build_env.sh; make install_rts"
 echo cd avr/avr_lib
 echo sed -i -e 's/stamp-libs: $(thread_libs)/stamp-libs:/' Makefile
 echo make
 echo cd ../..
+
+# Fails. thread_libs
 echo sudo su -c ". ../cross_build_env.sh; make install_libs"
 
