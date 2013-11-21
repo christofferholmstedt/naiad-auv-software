@@ -167,9 +167,10 @@ echo ./configure
 echo make
 
 # This fails as well with gprconfig, try some more times and it "works".
-echo sudo su -c ". ../native_build_env.sh ; . ../cross_build_env.sh; make install_rts"
+echo sudo su -c ". ../native_build_env.sh; . ../cross_build_env.sh; make install_rts"
 echo cd avr/avr_lib
 echo sed -i -e 's/stamp-libs: $(thread_libs)/stamp-libs:/' Makefile
+# Fails. thread_libs
 echo make
 echo cd ../..
 
