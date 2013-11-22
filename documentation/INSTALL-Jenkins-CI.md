@@ -48,7 +48,6 @@ through any suitable webbrowser.
 1. Go to "Manage Jenkins" > "Configure System"
 2. Under the "Git" section the default values should be enough.
 3. Under the "Git plugin" section set any value that you found reasonable.
-
 4. Go back to start page.
 5. Select "New Job".
 6. Select a suitable "Job name" without spaces (stay with lower-case, dash and underscore).
