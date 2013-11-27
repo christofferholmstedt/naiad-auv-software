@@ -257,13 +257,6 @@ echo "#################################################"
 echo "# Building and running all test harnesses"
 echo "#################################################"
 
-# echo ""
-# build_project=$(pwd)
-# echo ""
-# echo $build_project
-# build_project="${build_project##*/}"
-# echo $build_project
-# echo ""
 failed_test_projects=
 successful_test_projects=
 
@@ -402,8 +395,34 @@ do
     echo ""
 done
 
-# FINAL RESULTS OUTPUT FROM BUILD SCRIPT -------------------------------------
 successful_test_projects=$(sed 's|.gpr |.gpr\n|g' <<< $successful_test_projects)
+
+failed_projects=
+successful_projects=
+
+echo "##########################################################"
+echo "# Building projects that have a test project that builds"
+echo "##########################################################"
+
+for test_project_path in $successful_test_projects
+do
+    echo ""
+ 	# BASIC SET UP -------------------------------------------
+ 	project_path="$tests_dir/${test_project_path##*/src/}" # Remove test_dir+/src/ from project path
+    echo $project_path
+    project_name="$(basename $project_path)"
+    echo $project_name
+ 	project_name_wo_suffix="${project_name%.*}" # Remove filetype/suffix
+    echo $project_name_wo_suffix
+
+    unique_project_name=$(sed "s|$tests_dir/||g" <<< $project_path)
+ 	unique_project_name="${unique_project_name%.*}" # Remove filetype/suffix
+    unique_project_name=$(sed "s|/|-|g" <<< $unique_project_name)
+    echo $unique_project_name
+    echo ""
+done
+
+# FINAL RESULTS OUTPUT FROM BUILD SCRIPT -------------------------------------
 echo ""
 echo "######################################################"
 echo "# Projects with test harness that successfully build"
