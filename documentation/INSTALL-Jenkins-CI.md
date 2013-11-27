@@ -34,9 +34,9 @@ through any suitable webbrowser.
 5. Press "Check now" in the bottom right corner to update list of available plugins.
 6. Go to "Available" tab.
 7. Check "Github plugin" and "xUnit plugin", install without restart.
-(If it does not work, try again).
+**(This can randomly fail. If it does not work, try again)**.
 8. Go to "Updates" (tab) and make sure that the "Credentials plugin" is up to date.
-9. Enable basic security. Go to "Mange Jenkins" > "Configure Global Security".
+9. Enable basic security. Go to "Manage Jenkins" > "Configure Global Security".
 10. Check to box "Enable security".
 11. Choose "Jenkins own user database".
 12. Check "Allow users to sign up" if it is not already checked.
@@ -64,9 +64,15 @@ it is not possible.)
 
 ```
 export PATH=/usr/gnat/bin:$PATH
+export ADA_PROJECT_PATH=/usr/lib/gnat
+export GPR_PROJECT_PATH=/usr/lib/gnat
 env | grep -i shell
-./build_script /var/lib/jenkins/workspace/naiad-auv-software/src/
+cd scripts
+pwd
+ls -al
+./build_script.sh -o XML -d OFF
 ```
+
 The above lines are for debbugging to make sure you have the correct path
 for compiling Ada with gnatmake. As well as confirming you are running bash
 as shell and nothing else.
