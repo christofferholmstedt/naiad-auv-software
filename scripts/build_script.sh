@@ -404,21 +404,41 @@ echo "##########################################################"
 echo "# Building projects that have a test project that builds"
 echo "##########################################################"
 
-for test_project_path in $successful_test_projects
+for project_path in $successful_test_projects
 do
     echo ""
  	# BASIC SET UP -------------------------------------------
- 	project_path="$tests_dir/${test_project_path##*/src/}" # Remove test_dir+/src/ from project path
-    echo $project_path
     project_name="$(basename $project_path)"
-    echo $project_name
  	project_name_wo_suffix="${project_name%.*}" # Remove filetype/suffix
-    echo $project_name_wo_suffix
+ 	test_path="$tests_dir/${project_path##*/src/}" # Remove test_dir+/src/ from project path
 
     unique_project_name=$(sed "s|$tests_dir/||g" <<< $project_path)
  	unique_project_name="${unique_project_name%.*}" # Remove filetype/suffix
     unique_project_name=$(sed "s|/|-|g" <<< $unique_project_name)
-    echo $unique_project_name
+
+    # BUILD TEST PROJECT ---------------------------------------
+    if [[ $DEBUG == "ON" ]]; then
+ 	    echo "DEBUG: Building project $project_path [START]."
+    else
+ 	    echo "INFO: Building project $project_name [START]."
+    fi
+
+ 	build_success=true
+    gnatmake -d -p "-P$project_path"
+    if [ $? -ne 0 ]; then
+        failed_test_projects="$failed_projects $project_path"
+ 	    build_success=false
+ 		all_projects_succeed=false
+    else
+        successful_projects="$successful_projects $project_path"
+    fi
+
+    if [[ $DEBUG == "ON" ]]; then
+ 	    echo "DEBUG: Building project $project_path [FINISHED]."
+    else
+ 	    echo "INFO: Building project $project_name [FINISHED]."
+    fi
+
     echo ""
 done
 
