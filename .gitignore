@@ -22,6 +22,14 @@ b__test_runner.ads
 test_runner
 *.exe
 
+# AVR-Ada project specifics
+*.hex
+*.eep
+*.elf
+*.map
+*.sym
+*.lss
+
 # Hidden system files
 *.DS_Store
 *[Tt]humbs.db
