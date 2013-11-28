@@ -1,0 +1,9 @@
+project UART_Example extends "avr_app.gpr" is
+
+   for Main use ("uart_example");
+
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Source_Dirs use ("src");
+
+end UART_Example;
