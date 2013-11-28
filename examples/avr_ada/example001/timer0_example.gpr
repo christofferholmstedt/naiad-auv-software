@@ -1,0 +1,9 @@
+project Timer0_Example extends "avr_app.gpr" is
+
+   for Main use ("timer0_example");
+
+   for Object_Dir use "obj";
+   for Exec_Dir use ".";
+   for Source_Dirs use ("src");
+
+end Timer0_Example;
