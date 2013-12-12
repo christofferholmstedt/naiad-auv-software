@@ -1,6 +1,7 @@
 with Input_Sources.File;
 with Sax.Readers;
 with DOM.Readers;
+-- with Schema.Readers;
 with DOM.Core;
 with DOM.Core.Documents;
 with DOM.Core.Nodes;
@@ -11,6 +12,7 @@ with Ada.Text_IO;
 procedure main is
     Input   : Input_Sources.File.File_Input;
     Reader  : DOM.Readers.Tree_Reader;
+--  Reader  : Schema.Readers.Validating_Reader;
     Doc     : DOM.Core.Document;
     File_Name : String := Ada.Command_Line.Argument(1);
     Schema_File_Name : String := Ada.Command_Line.Argument(2);
