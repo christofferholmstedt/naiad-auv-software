@@ -2,6 +2,7 @@ with Input_Sources.File;
 with Sax.Readers;
 with DOM.Readers;
 -- with Schema.Readers;
+with Schema.DOM_Readers;
 with DOM.Core;
 with DOM.Core.Documents;
 with DOM.Core.Nodes;
@@ -11,8 +12,8 @@ with Ada.Text_IO;
 
 procedure main is
     Input   : Input_Sources.File.File_Input;
-    Reader  : DOM.Readers.Tree_Reader;
---  Reader  : Schema.Readers.Validating_Reader;
+--  Reader  : DOM.Readers.Tree_Reader;
+    Reader  : Schema.DOM_Readers.Tree_Reader;
     Doc     : DOM.Core.Document;
     File_Name : String := Ada.Command_Line.Argument(1);
     Schema_File_Name : String := Ada.Command_Line.Argument(2);
@@ -23,13 +24,13 @@ begin
     Input_Sources.File.Set_Public_Id (Input, "Preferences file");
     Input_Sources.File.Open (File_Name, Input);
 
-    DOM.Readers.Set_Feature (Reader, Sax.Readers.Validation_Feature, False);
-    DOM.Readers.Set_Feature (Reader, Sax.Readers.Namespace_Feature, False);
+    Schema.DOM_Readers.Set_Feature (Reader, Sax.Readers.Validation_Feature, False);
+    Schema.DOM_Readers.Set_Feature (Reader, Sax.Readers.Namespace_Feature, False);
 
-    DOM.Readers.Parse (Reader, Input);
+    Schema.DOM_Readers.Parse (Reader, Input);
     Input_Sources.File.Close (Input);
 
-    Doc := DOM.Readers.Get_Tree (Reader);
+    Doc := Schema.DOM_Readers.Get_Tree (Reader);
 
     List := DOM.Core.Documents.Get_Elements_By_Tag_Name (Doc, "pref");
 
@@ -42,6 +43,6 @@ begin
     end loop;
 
     DOM.Core.Free (List);
-    DOM.Readers.Free (Reader);
+    Schema.DOM_Readers.Free (Reader);
 
 end main;
