@@ -1,0 +1,10 @@
+with "../shared_types/shared_types.gpr";
+with "../sensor_fusion.gpr";
+
+project Tcp is
+
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+
+end Tcp;
+
