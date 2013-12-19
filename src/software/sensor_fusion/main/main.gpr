@@ -1,8 +1,8 @@
 with "../../virtualmachine/interpreter/interpreter.gpr";
 with "../object_handling/object_handling.gpr";
 with "../shared_types/shared_types.gpr";
-with "../tcp/tcp.gpr";
-with "../can/can.gpr";
+with "../TCP/tcp.gpr";
+with "../CAN/can.gpr";
 
 project Main is
 
