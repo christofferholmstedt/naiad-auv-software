@@ -1,3 +1,5 @@
+with Ada.Tags;
+
 package body Sensor_Fusion.Shared_Types is
 
    protected body TCANMessageList is
@@ -88,8 +90,10 @@ package body Sensor_Fusion.Shared_Types is
 
 
    function bIs_Same_Type_As (this : in TListObject'Class; xCompareWith : in TListObject'Class) return boolean is
+   use Ada.Tags;
    begin
-      return this in xCompareWith;
+	return this'Tag = xCompareWith'Tag;
+	-- return this in xCompareWith;
    end bIs_Same_Type_As;
 
    function iCount(this : in TListObject'Class) return integer is
