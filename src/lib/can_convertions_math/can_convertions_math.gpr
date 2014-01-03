@@ -3,10 +3,10 @@ with "../math/matrices/matrices.gpr";
 with "../can_float_conversions/can_float_conversions.gpr";
 with "../can_defs/can_defs.gpr";
 
-project Can_Convertions_Matrix is
+project Can_Convertions_Math is
 
    for Source_Dirs use ("src");
    for Object_Dir use "obj";
 
-end Can_Convertions_Matrix;
+end Can_Convertions_Math;
 
