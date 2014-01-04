@@ -10,13 +10,10 @@ package Sensor_Fusion.TCP is
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean);
    end TCP_Resource;
 
+   task TASK_TCP_IN;
+   -- Specification for TCP task "IN"
 
-   task TASK_TCP_IN is
-   end TASK_TCP_IN;
-
-   task TASK_TCP_OUT is
-   end TASK_TCP_OUT;
-
-
+   task TASK_TCP_OUT;
+   -- Specification for TCP task "OUT"
 
 end Sensor_Fusion.TCP;

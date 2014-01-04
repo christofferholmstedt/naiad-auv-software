@@ -16,6 +16,9 @@ with Ada.Text_IO;
 procedure Main is
    use Ada.Real_Time;
 
+   package Debug_Int_IO is new Ada.Text_IO.Integer_IO(Integer);
+   debugCounter : Integer := 1;
+
    fDeltaTime : float := 0.0;
    xTimeStart : Ada.Real_Time.Time := Ada.Real_Time.Clock;
    xTimeSpan : Ada.Real_Time.Time_Span := Ada.Real_Time.Time_Span_Zero;
@@ -40,7 +43,10 @@ begin
       end if;
 
 --------- Sensor Fusion Calculations starts here---------------------------------------------------------------------------------------
-	Ada.Text_IO.Put_Line("Test Main");
+      Ada.Text_IO.Put("Test Main");
+      Debug_Int_IO.Put(debugCounter, 5);
+      Ada.Text_IO.New_Line;
+      debugCounter := debugCounter + 1;
 --------- Sensor Fusion Calculations ends here-----------------------------------------------------------------------------------------
 
       --delay 0.5; -- for testing
