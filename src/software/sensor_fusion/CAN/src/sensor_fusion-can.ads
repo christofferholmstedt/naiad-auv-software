@@ -10,12 +10,10 @@ package Sensor_Fusion.CAN is
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean);
    end CAN_Resource;
 
+   task TASK_CAN_IN;
+   -- Specification for CAN task "IN"
 
-   task TASK_CAN_IN is
-   end TASK_CAN_IN;
-
-   task TASK_CAN_OUT is
-   end TASK_CAN_OUT;
-
+   task TASK_CAN_OUT;
+   -- Specification for CAN task "OUT"
 
 end Sensor_Fusion.CAN;

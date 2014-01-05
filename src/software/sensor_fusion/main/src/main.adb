@@ -49,7 +49,7 @@ begin
       debugCounter := debugCounter + 1;
 --------- Sensor Fusion Calculations ends here-----------------------------------------------------------------------------------------
 
-      --delay 0.5; -- for testing
+      delay 0.5; -- for testing
    end loop;
 
 end Main;
