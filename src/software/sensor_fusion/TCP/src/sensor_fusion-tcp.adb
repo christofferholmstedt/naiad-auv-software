@@ -10,8 +10,8 @@ package body Sensor_Fusion.TCP is
 
       procedure Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message) is
       begin
-         Ada.Text_IO.Put_Line("TCP_Resource: TRANSMITTING."); -- for testing
-         Int_IO.Put(xCANMessage.ID, 10);
+         Ada.Text_IO.Put("TCP_Resource: Sending message with ID "); -- for testing
+         Int_IO.Put(xCANMessage.ID, 5);
          Ada.Text_IO.New_Line;
          Ada.Text_IO.Put_Line("TCP_Resource: FINIHSED TRANSMITTING."); -- for testing
       end Send;
@@ -19,8 +19,12 @@ package body Sensor_Fusion.TCP is
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean) is
          xNewCANMessage : Sensor_Fusion.Shared_Types.CAN_Message := (ID => CAN_Message_ID);
       begin
-         Ada.Text_IO.Put_Line("TCP_Resource: Created TEST Message with ID 100."); -- for testing
          xNewCANMessage.ID := CAN_Message_ID;
+
+         Ada.Text_IO.Put("TCP_Resource: Created TEST Message with ID "); -- for testing
+         Int_IO.Put(xCANMessage.ID, 5);
+         Ada.Text_IO.New_Line;
+
          xCANMessage := xNewCANMessage;
          bMessageReceived := true;
 
@@ -44,14 +48,17 @@ package body Sensor_Fusion.TCP is
       xCANMessageFromShore : Sensor_Fusion.Shared_Types.CAN_Message;
       bMessageReceived : boolean;
    begin
+      Ada.Text_IO.Put_Line("TCP_IN: Started."); -- for testing
 
       loop
-         Ada.Text_IO.Put_Line("TCP_IN: Message recieved."); -- for testing
          TCP_Resource.Receive(xCANMessage      => xCANMessageFromShore,
                               bMessageReceived => bMessageReceived);
 
          if bMessageReceived then
-            Ada.Text_IO.Put_Line("TCP_IN: Adding new CAN message to list CAN_Messages_TCP_IN_To_CAN_OUT."); -- for testing
+            Ada.Text_IO.Put("TCP_IN: Adding new CAN message to list CAN_Messages_TCP_IN_To_CAN_OUT ID: "); -- for testing
+            Int_IO.Put(xCANMessageFromShore.ID, 5);
+            Ada.Text_IO.New_Line;
+
             Sensor_Fusion.Shared_Types.CAN_Messages_TCP_IN_To_CAN_OUT.Add(xCANMessage => xCANMessageFromShore);
          end if;
 
