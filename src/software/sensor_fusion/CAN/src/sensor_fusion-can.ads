@@ -8,6 +8,8 @@ package Sensor_Fusion.CAN is
    protected CAN_Resource is
       procedure Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message);
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean);
+   private
+      Temp_CAN_Message_Storage: Sensor_Fusion.Shared_Types.CAN_Message; -- testing
    end CAN_Resource;
 
    task TASK_CAN_IN;

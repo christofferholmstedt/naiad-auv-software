@@ -6,18 +6,24 @@ with Ada.Unchecked_Deallocation;
 
 package Sensor_Fusion.Shared_Types is
 
-   type CAN_Message is null record; -- temporary until this can be built with AT90CAN128 messages
+   -----------------
+   -- Basic types --
+   -----------------
+
+   type CAN_Message is
+      record
+         ID : Integer := 0;
+      end record; -- temporary until this can be built with AT90CAN128 messages
 
    type CCANMessageListItem is tagged private;
    type pCCANMessageListItem is access CCANMessageListItem;
 
-
    type TListObject is tagged private;
    type pTListObject is access TListObject'class;
 
-
-
-
+   -----------------------
+   -- CAN Messages list --
+   -----------------------
 
    protected type TCANMessageList is
       procedure Add(xCANMessage : in CAN_Message);
@@ -28,6 +34,10 @@ package Sensor_Fusion.Shared_Types is
       pxCANMessageList : pCCANMessageListItem;
    end TCANMessageList;
 
+   -------------------------
+   -- Custom Objects list --
+   -------------------------
+
    protected type TObjectList is
       procedure Add(xNewObject : in TListObject'Class);
       procedure Remove (pxObjectRemoved : out pTListObject); -- NEEDS TO FREE pxObjectRemoved AFTER!
@@ -37,7 +47,12 @@ package Sensor_Fusion.Shared_Types is
       pxObjectList : pTListObject;
    end TObjectList;
 
+   -----------------------------------------------------
+   -- Insantiation of required list/protected objects --
+   -----------------------------------------------------
 
+   CAN_Messages_TCP_IN_To_CAN_OUT: TCANMessageList;
+   CAN_Messages_CAN_IN_To_TCP_OUT: TCANMessageList;
    xCANOutMessageList : TCANMessageList;
    xCANInMessageList : TCANMessageList;
    xCANSimulatedMessageList : TCANMessageList;
@@ -45,21 +60,19 @@ package Sensor_Fusion.Shared_Types is
    xObjectsInList : TObjectList;
    xObjectsOutList : TObjectList;
 
+   ----------------------
+   -- Helper functions --
+   ----------------------
+
    function xGet_CAN_Message_From_Object(this : in TListObject'Class) return CAN_Message;
    function xGet_Object_From_CAN_Message(xCANMessage : in CAN_Message) return TListObject'Class;
    procedure Dealloc(pxListObject : in out pTListObject);
 
 private
 
-   type TListObject is tagged
-      record
-         xCANMessage : CAN_Message;
-         pxNextObject : pTListObject;
-      end record;
-
-   function iCount(this : in TListObject'Class) return integer;
-   function bIs_Same_Type_As(this : in TListObject'Class; xCompareWith : in TListObject'Class) return boolean;
-
+   -----------------------
+   -- CAN Messages list --
+   -----------------------
 
    type CCANMessageListItem is tagged
       record
@@ -69,8 +82,18 @@ private
 
    function iCount(this : in CCANMessageListItem) return integer;
 
+   -------------------------
+   -- Custom Objects list --
+   -------------------------
 
+   type TListObject is tagged
+      record
+         xCANMessage : CAN_Message;
+         pxNextObject : pTListObject;
+      end record;
 
+   function iCount(this : in TListObject'Class) return integer;
+   function bIs_Same_Type_As(this : in TListObject'Class; xCompareWith : in TListObject'Class) return boolean;
 
    -- memory deallocation
    procedure Free is new Ada.Unchecked_Deallocation(CCANMessageListItem, pCCANMessageListItem);
