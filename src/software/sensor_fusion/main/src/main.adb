@@ -39,6 +39,18 @@ begin
                                  & Integer'Image(xNewCANMessage.ID)); -- for testing
       end if;
 
+      -- Filter_CAN_IN to Main
+      if Sensor_Fusion.Shared_Types.CAN_Messages_Filter_CAN_IN_To_Main.iCount > 0 then
+         Sensor_Fusion.Shared_Types.CAN_Messages_Filter_CAN_IN_To_Main.Remove(xCANMessage => xNewCANMessage);
+         Ada.Text_IO.Put_Line("Main (From Filter_CAN_IN): New CAN Message recieved with ID "
+                                 & Integer'Image(xNewCANMessage.ID)); -- for testing
+
+         xNewCANMessage.ID := xNewCANMessage.ID + 20000;
+
+         Sensor_Fusion.Shared_Types.CAN_Messages_Main_To_TCP_OUT.Add(xCANMessage => xNewCANMessage);
+         Ada.Text_IO.Put_Line("Main: Adding new CAN message to list CAN_Messages_Main_To_TCP_OUT with ID "
+                                 & Integer'Image(xNewCANMessage.ID)); -- for testing
+      end if;
 --------- Sensor Fusion Calculations ends here--------------------------------
       Ada.Text_IO.Put_Line("Main: " & Integer'Image(debugCounter));
       debugCounter := debugCounter + 1;

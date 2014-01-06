@@ -60,14 +60,6 @@ package body Sensor_Fusion.CAN is
       -- It's in this protected object (resource) that actual calls to the drivers
       -- for the CAN Bus should be made.
 
-      -- During testing the protected variable
-      -- Temp_CAN_Message_Storage isn't locked behind any semaphore so
-      -- it could perhaps be overwritten. Though this variable is not going
-      -- to be used in a real system. The problem that could arise is that
-      -- data from both Filter_TCP_IN and Main tasks want to send something
-      -- at the same time and the data from Filter_TCP_IN will then be
-      -- overwritten if TASK_CAN_IN doesn't read the variable in between
-      -- writes.
    end CAN_Resource;
 
    -----------------

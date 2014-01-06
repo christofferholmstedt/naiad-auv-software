@@ -10,11 +10,8 @@ package body Sensor_Fusion.TCP is
 
       procedure Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message) is
       begin
-         -- Ada.Text_IO.Put("TCP_Resource: Sending message with ID "); -- for testing
-         -- Int_IO.Put(xCANMessage.ID, 5);
-         -- Ada.Text_IO.New_Line;
-         -- Ada.Text_IO.Put_Line("TCP_Resource: FINIHSED TRANSMITTING."); -- for testing
-         null;
+         Ada.Text_IO.Put_Line("TCP_Resource.Send: Sent CAN Message with ID "
+                                 & Integer'Image(xCANMessage.ID)); -- for testing
       end Send;
 
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean) is
@@ -76,29 +73,23 @@ package body Sensor_Fusion.TCP is
 
          -- Filter_CAN_IN to TCP
          if Sensor_Fusion.Shared_Types.CAN_Messages_Filter_CAN_IN_To_TCP_OUT.iCount > 0 then
-            -- Ada.Text_IO.Put_Line("TCP_OUT: CAN_Messages_Filter_CAN_IN_To_TCP_OUT has items in it."); -- for testing
-
             Sensor_Fusion.Shared_Types.CAN_Messages_Filter_CAN_IN_To_TCP_OUT.Remove(xCANMessage => xCANMessageToShore);
+            Ada.Text_IO.Put_Line("TCP_OUT (From Filter_CAN_IN): New CAN Message recieved with ID "
+                                    & Integer'Image(xCANMessageToShore.ID)); -- for testing
+
             TCP_Resource.Send(xCANMessage => xCANMessageToShore);
-            -- Ada.Text_IO.Put_Line("TCP_OUT (From Filter_CAN_IN): Message sent on TCP socket."); -- for testing
-         else
-            -- Ada.Text_IO.Put_Line("TCP_OUT (From Filter_CAN_IN): No message sent on TCP socket."); -- for testing
-            null;
          end if;
 
          -- Main to TCP
          if Sensor_Fusion.Shared_Types.CAN_Messages_Main_To_TCP_OUT.iCount > 0 then
-            -- Ada.Text_IO.Put_Line("TCP_OUT: CAN_Messages_Main_To_TCP_OUT has items in it."); -- for testing
-
             Sensor_Fusion.Shared_Types.CAN_Messages_Main_To_TCP_OUT.Remove(xCANMessage => xCANMessageToShore);
+            Ada.Text_IO.Put_Line("TCP_OUT (From Main): New CAN Message recieved with ID "
+                                    & Integer'Image(xCANMessageToShore.ID)); -- for testing
+
             TCP_Resource.Send(xCANMessage => xCANMessageToShore);
-            -- Ada.Text_IO.Put_Line("TCP_OUT (From Main): Message sent on TCP socket."); -- for testing
-         else
-            -- Ada.Text_IO.Put_Line("TCP_OUT (From Main): No message sent on TCP socket."); -- for testing
-            null;
          end if;
 
-         delay 3.0; -- for testing
+         delay 0.1; -- for testing
       end loop;
    end TASK_TCP_OUT;
 
