@@ -3,6 +3,7 @@ with "../object_handling/object_handling.gpr";
 with "../shared_types/shared_types.gpr";
 with "../TCP/tcp.gpr";
 with "../CAN/can.gpr";
+with "../filter_CAN_messages/filter_can_messages.gpr";
 
 project Main is
 

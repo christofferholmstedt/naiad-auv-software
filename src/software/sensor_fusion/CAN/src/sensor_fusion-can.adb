@@ -2,31 +2,72 @@ with Ada.Text_IO;
 
 package body Sensor_Fusion.CAN is
 
-   ------------------
-   -- CAN_RESOURCE --
-   ------------------
+   -------------------------------
+   -- CAN_RESOURCE with entries --
+   -------------------------------
 
    protected body CAN_Resource is
 
-      procedure Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message) is
+      entry Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message) when Allow_Send = true is
       begin
          Temp_CAN_Message_Storage := xCANMessage; -- for testing
-         Ada.Text_IO.Put_Line("CAN_Resource: Send called."); -- for testing
+         Ada.Text_IO.Put_Line("CAN_Resource.Send: CAN Message sent on CAN bus with ID "
+                                 & Integer'Image(xCANMessage.ID)); -- for testing
+         Allow_Send := false;
       end Send;
 
       procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean) is
          xNewCANMessage : Sensor_Fusion.Shared_Types.CAN_Message;
       begin
-         Ada.Text_IO.Put_Line("CAN_Resource: Receive called."); -- for testing
-         xCANMessage := Temp_CAN_Message_Storage;  -- for testing
-         bMessageReceived := true;
+         -- Ada.Text_IO.Put_Line("CAN_Resource: Receive called."); -- for testing
+         if Temp_CAN_Message_Storage.ID /= 0 and Temp_CAN_Message_Storage.ID /= Last_Message_ID then
+            xCANMessage := Temp_CAN_Message_Storage;  -- for testing
+            Ada.Text_IO.Put_Line("CAN_Resource.Recieve: CAN Message recieved on CAN bus with ID "
+                                    & Integer'Image(xCANMessage.ID)); -- for testing
+            bMessageReceived := true;
+            Allow_Send := true;
+            Last_Message_ID := xCANMessage.ID;
+         end if;
       end Receive;
+
+   ----------------------------------
+   -- CAN_RESOURCE without entries --
+   ----------------------------------
+
+--   protected body CAN_Resource is
+--
+--      procedure Send(xCANMessage : in Sensor_Fusion.Shared_Types.CAN_Message) is
+--      begin
+--         Temp_CAN_Message_Storage := xCANMessage; -- for testing
+--         Ada.Text_IO.Put_Line("CAN_Resource.Send: CAN Message sent on CAN bus with ID "
+--                                 & Integer'Image(xCANMessage.ID)); -- for testing
+--      end Send;
+--
+--      procedure Receive(xCANMessage : out Sensor_Fusion.Shared_Types.CAN_Message; bMessageReceived : out boolean) is
+--         xNewCANMessage : Sensor_Fusion.Shared_Types.CAN_Message;
+--      begin
+--         -- Ada.Text_IO.Put_Line("CAN_Resource: Receive called."); -- for testing
+--         if (Temp_CAN_Message_Storage.ID /= 0) then
+--            xCANMessage := Temp_CAN_Message_Storage;  -- for testing
+--            Ada.Text_IO.Put_Line("CAN_Resource.Recieve: CAN Message recieved on CAN bus with ID "
+--                                    & Integer'Image(xCANMessage.ID)); -- for testing
+--            bMessageReceived := true;
+--         end if;
+--      end Receive;
 
       -- Current implementation fakes the CAN Bus and recieves the same
       -- messages that it sends. This creates a loopback for testing.
       -- It's in this protected object (resource) that actual calls to the drivers
       -- for the CAN Bus should be made.
 
+      -- During testing the protected variable
+      -- Temp_CAN_Message_Storage isn't locked behind any semaphore so
+      -- it could perhaps be overwritten. Though this variable is not going
+      -- to be used in a real system. The problem that could arise is that
+      -- data from both Filter_TCP_IN and Main tasks want to send something
+      -- at the same time and the data from Filter_TCP_IN will then be
+      -- overwritten if TASK_CAN_IN doesn't read the variable in between
+      -- writes.
    end CAN_Resource;
 
    -----------------
@@ -34,33 +75,22 @@ package body Sensor_Fusion.CAN is
    -----------------
 
    task body TASK_CAN_IN is
-      bCANMessageReceived : boolean;
       xNewCANMessage : Sensor_Fusion.Shared_Types.CAN_Message;
+      bCANMessageReceived : boolean := false;
    begin
-      loop
+      Ada.Text_IO.Put_Line("CAN_IN: Started."); -- for testing
 
-         Ada.Text_IO.Put_Line("CAN_IN: Calling CAN_Resource.Receive."); -- for testing
+      loop
          CAN_Resource.Receive(xCANMessage      => xNewCANMessage,
                               bMessageReceived => bCANMessageReceived);
 
-         if bCANMessageReceived then
-            Ada.Text_IO.Put_Line("CAN_IN: Adding new CAN message to CAN_Messages_CAN_IN_To_TCP_OUT list."); -- for testing
-            Sensor_Fusion.Shared_Types.CAN_Messages_CAN_IN_To_TCP_OUT.Add(xCANMessage => xNewCANMessage);
+         if bCANMessageReceived and xNewCANMessage.ID /= 0 then
+            Ada.Text_IO.Put_Line("CAN_IN: Adding new CAN message to list CAN_Messages_CAN_IN_To_Filter_CAN_IN with ID "
+                                    & Integer'Image(xNewCANMessage.ID)); -- for testing
+            Sensor_Fusion.Shared_Types.CAN_Messages_CAN_IN_To_Filter_CAN_IN.Add(xCANMessage => xNewCANMessage);
          end if;
 
---         if bCANMessageReceived then
---            Ada.Text_IO.Put_Line("CAN_IN: Adding new CAN message to CAN_Messages_CAN_IN_To_TCP_OUT list."); -- for testing
---            Sensor_Fusion.Shared_Types.xObjectsInList.Add(xNewObject => Sensor_Fusion.Shared_Types.xGet_Object_From_CAN_Message(xNewCANMessage));
---            Sensor_Fusion.Shared_Types.xCANInMessageList.Add(xCANMessage => xNewCANMessage);
---         end if;
---
---         if Sensor_Fusion.Shared_Types.xCANSimulatedMessageList.iCount > 0 then
---            Ada.Text_IO.Put_Line("CAN_IN: Adding new CAN message to Simulated list."); -- for testing
---            Sensor_Fusion.Shared_Types.xCANSimulatedMessageList.Remove(xCANMessage => xNewCANMessage);
---            CAN_Resource.Send(xCANMessage => xNewCANMessage);
---         end if;
-
-         delay 0.5;  -- for testing
+         delay 1.0;  -- for testing
       end loop;
    end TASK_CAN_IN;
 
@@ -69,31 +99,31 @@ package body Sensor_Fusion.CAN is
    ------------------
 
    task body TASK_CAN_OUT is
---      pxObject : Sensor_Fusion.Shared_Types.pTListObject;
       xNewCANMessage : Sensor_Fusion.Shared_Types.CAN_Message;
    begin
+      Ada.Text_IO.Put_Line("CAN_OUT: Started."); -- for testing
+
       loop
 
-         if Sensor_Fusion.Shared_Types.CAN_Messages_TCP_IN_To_CAN_OUT.iCount > 0 then
-            Ada.Text_IO.Put_Line("CAN_OUT: CAN_Messages_TCP_IN_To_CAN_OUT has items in it."); -- for testing
+         -- Filter_TCP_IN to CAN
+         if Sensor_Fusion.Shared_Types.CAN_Messages_Filter_TCP_IN_To_CAN_OUT.iCount > 0 then
+            Sensor_Fusion.Shared_Types.CAN_Messages_Filter_TCP_IN_To_CAN_OUT.Remove(xCANMessage => xNewCANMessage);
+            Ada.Text_IO.Put_Line("CAN_OUT (From Filter_TCP_IN): New CAN Message recieved with ID "
+                                    & Integer'Image(xNewCANMessage.ID)); -- for testing
 
-            Sensor_Fusion.Shared_Types.CAN_Messages_TCP_IN_To_CAN_OUT.Remove(xCANMessage => xNewCANMessage);
             CAN_Resource.Send(xCANMessage => xNewCANMessage);
          end if;
---          if Sensor_Fusion.Shared_Types.xObjectsOutList.iCount > 0 then
---             Ada.Text_IO.Put_Line("CAN_OUT: xObjectsOutMessageList has items in it."); -- for testing
---
---             Sensor_Fusion.Shared_Types.xObjectsOutList.Remove(pxObjectRemoved => pxObject);
---             xNewCANMessage := pxObject.xGet_CAN_Message_From_Object;
---             Sensor_Fusion.Shared_Types.Dealloc(pxObject);
---             Sensor_Fusion.Shared_Types.xCANOutMessageList.Add(xNewCANMessage);
---
---             CAN_Resource.Send(xCANMessage => xNewCANMessage);
---          else
---             Ada.Text_IO.Put_Line("CAN_OUT: No new item in list to be transmitted."); -- for testing
---          end if;
 
-         delay 0.5;  -- for testing
+         -- Main to CAN
+         if Sensor_Fusion.Shared_Types.CAN_Messages_Main_To_CAN_OUT.iCount > 0 then
+            Sensor_Fusion.Shared_Types.CAN_Messages_Main_To_CAN_OUT.Remove(xCANMessage => xNewCANMessage);
+            Ada.Text_IO.Put_Line("CAN_OUT (From Main): New CAN Message recieved with ID "
+                                    & Integer'Image(xNewCANMessage.ID)); -- for testing
+
+            CAN_Resource.Send(xCANMessage => xNewCANMessage);
+         end if;
+
+         delay 3.0;  -- for testing
       end loop;
    end TASK_CAN_OUT;
 

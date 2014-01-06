@@ -51,8 +51,16 @@ package Sensor_Fusion.Shared_Types is
    -- Insantiation of required list/protected objects --
    -----------------------------------------------------
 
-   CAN_Messages_TCP_IN_To_CAN_OUT: TCANMessageList;
-   CAN_Messages_CAN_IN_To_TCP_OUT: TCANMessageList;
+   CAN_Messages_TCP_IN_To_Filter_TCP_IN: TCANMessageList;
+   CAN_Messages_Filter_TCP_IN_To_CAN_OUT: TCANMessageList;
+   CAN_Messages_Filter_TCP_IN_To_Main: TCANMessageList;
+   CAN_Messages_Main_To_CAN_OUT: TCANMessageList;
+
+   CAN_Messages_CAN_IN_To_Filter_CAN_IN: TCANMessageList;
+   CAN_Messages_Filter_CAN_IN_To_TCP_OUT: TCANMessageList;
+   CAN_Messages_Filter_CAN_IN_To_Main: TCANMessageList;
+   CAN_Messages_Main_To_TCP_OUT: TCANMessageList;
+
    xCANOutMessageList : TCANMessageList;
    xCANInMessageList : TCANMessageList;
    xCANSimulatedMessageList : TCANMessageList;
